@@ -17,6 +17,7 @@ interface SlidesContextValue {
     level: string
     setLevel: (l: string) => void
     handleEditSlide: (field: 'title' | 'content', value: string) => void
+    handleRemoveSlide: (slideIndexToRemove: number) => void
 }
 
 export const SlidesContext = createContext<SlidesContextValue | undefined>(undefined)
@@ -34,9 +35,18 @@ export const SlidesProvider = ({ children }: { children: ReactNode }) => {
         setSlides(newSlides)
     }
 
+    const handleRemoveSlide = (slideIndexToRemove: number) => {
+        const newSlides = [...slides]
+        setSlides(newSlides.filter((_, index) => index !== slideIndexToRemove))
+        
+        if (currentSlideIndex >= slideIndexToRemove) {
+            setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))
+        }
+    }
+
     return (
         <SlidesContext.Provider
-            value={{ slides, setSlides, currentSlideIndex, setCurrentSlideIndex, topic, setTopic, level, setLevel, handleEditSlide }}
+            value={{ slides, setSlides, currentSlideIndex, setCurrentSlideIndex, topic, setTopic, level, setLevel, handleEditSlide, handleRemoveSlide }}
         >
             {children}
         </SlidesContext.Provider>
