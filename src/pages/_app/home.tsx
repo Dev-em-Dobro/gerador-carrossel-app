@@ -15,12 +15,12 @@ function Home() {
         alert(`Gerando slides para o tema: ${topic} no nível: ${level}`)
     }
     return (
-        <div className="min-h-full bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-8 flex flex-col">
+        <div className="min-h-full bg-linear-to-br from-indigo-50 via-white to-purple-50 p-8 flex flex-col">
             {/* Hero Section */}
             <div className="mb-8">
                 <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-5 h-5 text-indigo-600" />
-                    <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-3xl font-black bg-linear-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent mb-2">
                          Crie Carrosséis Incríveis
                     </h1>
  
@@ -35,7 +35,7 @@ function Home() {
                 <form className="space-y-6" onSubmit={handleSubmitForm}>
                     {/* Tema Principal */}
                     <div>
-                        <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <label className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
                             <Zap className="w-4 h-4 text-yellow-500" />
                             Tema Principal
                         </label>
@@ -74,7 +74,7 @@ function Home() {
                     <button
                         type="submit"
                         disabled={topic.length === 0}
-                        className="w-full mt-8 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+                        className="w-full mt-8 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
                     >
                         <Wand2 size={20} />
                         Gerar Carrossel

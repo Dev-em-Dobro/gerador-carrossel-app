@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './pages/__root'
 import { Route as PreviewRouteImport } from './pages/_app/preview'
 import { Route as HomeRouteImport } from './pages/_app/home'
-import { Route as EditorRouteImport } from './pages/_app/editor'
 
 const PreviewRoute = PreviewRouteImport.update({
     id: '/preview',
@@ -23,39 +22,30 @@ const HomeRoute = HomeRouteImport.update({
     path: '/home',
     getParentRoute: () => rootRouteImport,
 } as any)
-const EditorRoute = EditorRouteImport.update({
-    id: '/editor',
-    path: '/editor',
-    getParentRoute: () => rootRouteImport,
-} as any)
 
 
 export interface FileRoutesByFullPath {
-    '/editor': typeof EditorRoute
     '/home': typeof HomeRoute
     '/preview': typeof PreviewRoute
 }
 export interface FileRoutesByTo {
-    '/editor': typeof EditorRoute
     '/home': typeof HomeRoute
     '/preview': typeof PreviewRoute
 }
 export interface FileRoutesById {
     __root__: typeof rootRouteImport
-    '/editor': typeof EditorRoute
     '/home': typeof HomeRoute
     '/preview': typeof PreviewRoute
 }
 export interface FileRouteTypes {
     fileRoutesByFullPath: FileRoutesByFullPath
-    fullPaths: '/editor' | '/home' | '/preview'
+    fullPaths: '/home' | '/preview'
     fileRoutesByTo: FileRoutesByTo
-    to: '/editor' | '/home' | '/preview'
-    id: '__root__' | '/editor' | '/home' | '/preview'
+    to: '/home' | '/preview'
+    id: '__root__' | '/home' | '/preview'
     fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-    EditorRoute: typeof EditorRoute
     HomeRoute: typeof HomeRoute
     PreviewRoute: typeof PreviewRoute
 }
@@ -76,18 +66,11 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof HomeRouteImport
             parentRoute: typeof rootRouteImport
         }
-        '/editor': {
-            id: '/editor'
-            path: '/editor'
-            fullPath: '/editor'
-            preLoaderRoute: typeof EditorRouteImport
-            parentRoute: typeof rootRouteImport
-        }
+
     }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-    EditorRoute: EditorRoute,
     HomeRoute: HomeRoute,
     PreviewRoute: PreviewRoute,
 }
