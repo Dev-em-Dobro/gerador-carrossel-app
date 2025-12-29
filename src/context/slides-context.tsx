@@ -5,7 +5,6 @@ export interface Slide {
     type: string
     title: string
     content: string
-    bg: string
 }
 
 interface SlidesContextValue {

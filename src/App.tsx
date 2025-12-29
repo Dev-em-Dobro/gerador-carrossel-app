@@ -1,5 +1,6 @@
 import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen';
+import Spinner from './components/shared/spinner';
 
 const router = createRouter({
     routeTree, 
@@ -15,6 +16,7 @@ const router = createRouter({
             </div>
         );
     },
+    defaultPendingComponent: () => <Spinner />,
 })
 
 

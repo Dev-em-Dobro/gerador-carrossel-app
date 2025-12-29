@@ -3,6 +3,12 @@ import { useSlides } from '../../context/slides-context'
 import { Sparkles } from 'lucide-react'
 
 export const Route = createFileRoute('/preview')({
+    head: () => ({
+        meta: [
+            { name: 'description', content: 'Pré-visualize e edite os slides gerados para o seu carrossel.' },
+            { title: 'Preview dos Slides - Gerador de Carrossel' },
+        ]
+    }),
     component: Preview,
 })
 
@@ -27,7 +33,7 @@ function Preview() {
     const slide = slides[currentSlideIndex]
 
     return (
-        <div className="min-h-full bg-linear-to-br from-indigo-50 via-white to-purple-50 p-8 flex flex-col">
+        <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 p-8 flex flex-col justify-center">
             <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-5 h-5 text-indigo-600" />
@@ -74,6 +80,12 @@ function Preview() {
                                 >
                                     Próximo
                                 </button>
+                                <Link
+                                    to="/home"
+                                    className="ml-auto px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm hover:bg-indigo-700"
+                                >
+                                    Voltar para Home
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -81,7 +93,7 @@ function Preview() {
                     {/* Preview */}
                     <div>
                         <h3 className="text-sm uppercase tracking-wide text-gray-500 font-bold mb-4">Preview do Slide Atual</h3>
-                        <div className={`p-8 rounded-xl text-white ${slide?.bg || 'bg-gray-800'}`}>
+                        <div className="p-8 rounded-xl text-white bg-indigo-800 h-96 flex flex-col justify-center shadow-lg">
                             <h3 className="text-2xl font-bold mb-2">{slide?.title}</h3>
                             <p className="text-base">{slide?.content}</p>
                         </div>

@@ -1,29 +1,79 @@
 import { useSlides } from '../../context/slides-context'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Wand2, Sparkles, Zap } from 'lucide-react'
+import OpenAI from 'openai'
+// @ts-ignore
+import systemPrompt from '../../../docs/system-prompt.md?raw'
+import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 export const Route = createFileRoute('/home')({
+    head: () => ({
+        meta: [
+            { name: 'description', content: 'Crie carrosséis de slides para redes sociais com inteligência artificial de forma rápida e fácil.' },
+            { title: 'Gerador de Carrossel - Crie Slides com IA' },
+        ]
+    }),
     component: Home,
+})
+
+const client = new OpenAI({
+    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
 })
 
 
 function Home() {
-    const { topic, setTopic, level, setLevel } = useSlides()
+    const { topic, setTopic, level, setLevel, slides, setSlides, setCurrentSlideIndex } = useSlides()
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false)
 
-    const handleSubmitForm = (e: React.FormEvent) => {
+    const handleSubmitForm = async (e: React.FormEvent) => {
         e.preventDefault()
-        alert(`Gerando slides para o tema: ${topic} no nível: ${level}`)
+        setLoading(true)
+        try {
+            const userMessage = `Crie um carrossel de slides sobre o tema "${topic}" com nível de profundidade "${level}". Retorne apenas um JSON no formato: { "slides": [ { "title": "", "content": "" }, ... ] } com entre 3 e 8 slides. NÃO inclua nenhum campo de cor/background (bg) nos objetos.`
+
+            const response = await client.responses.create({
+                model: 'gpt-4o',
+                input: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userMessage },
+                ],
+            })
+
+            const raw = response.output_text || JSON.stringify(response.output)
+            // tenta extrair JSON do texto retornado
+            const jsonStart = raw.indexOf('{')
+            const jsonText = jsonStart !== -1 ? raw.slice(jsonStart) : raw
+            const parsed = JSON.parse(jsonText)
+            const slides = (parsed.slides || []).map((s: any, i: number) => ({ id: i, type: 'default', title: s.title || '', content: s.content || '' }))
+
+
+            setSlides(slides)
+            setCurrentSlideIndex(0)
+
+            navigate({ to: '/preview' });
+
+        } catch (err) {
+            console.error(err)
+            alert('Erro ao gerar slides. Veja o console para detalhes.')
+        } finally {
+            setLoading(false)
+        }
     }
+
+
     return (
-        <div className="min-h-full bg-linear-to-br from-indigo-50 via-white to-purple-50 p-8 flex flex-col">
+        <div className="relative min-h-full bg-linear-to-br from-indigo-50 via-white to-purple-50 p-8 flex flex-col">
             {/* Hero Section */}
             <div className="mb-8">
                 <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-5 h-5 text-indigo-600" />
                     <h1 className="text-3xl font-black bg-linear-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent mb-2">
-                         Crie Carrosséis Incríveis
+                        Crie Carrosséis Incríveis
                     </h1>
- 
+
                 </div>
                 <p className="text-gray-600 text-lg max-w-md">
                     Transforme suas ideias em carrosséis de redes sociais com inteligência artificial
@@ -58,27 +108,39 @@ function Home() {
                                     key={opt}
                                     type="button"
                                     onClick={() => setLevel(opt)}
-                                    className={`py-3 px-4 rounded-lg font-medium transition-all border-2 ${
-                                        level === opt
-                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md'
-                                            : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300 hover:bg-white'
-                                    }`}
+                                    className={`py-3 px-4 rounded-lg font-medium transition-all border-2 ${level === opt
+                                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md'
+                                        : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300 hover:bg-white'
+                                        }`}
                                 >
                                     {opt}
                                 </button>
                             ))}
                         </div>
+                        {loading && typeof document !== 'undefined' && createPortal(
+                            <div aria-hidden className="fixed inset-0 z-50 flex items-center justify-center">
+                                <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+                                <div className="relative z-10 flex flex-col items-center gap-4 text-white">
+                                    <div className="w-14 h-14 rounded-full border-4 border-white border-t-transparent animate-spin" />
+                                    <div className="text-lg font-semibold">Carregando...</div>
+                                </div>
+                            </div>,
+                            document.body
+                        )}
                     </div>
 
                     {/* Generate Button */}
                     <button
                         type="submit"
-                        disabled={topic.length === 0}
-                        className="w-full mt-8 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+                        disabled={topic.length === 0 || loading}
+                        className="w-full mt-8 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 cursor-pointer"
                     >
                         <Wand2 size={20} />
-                        Gerar Carrossel
+                        {loading ? 'Gerando Slides...' : 'Gerar Carrossel de Slides'}
                     </button>
+                    {
+                        slides.length > 0 && <Link to="/preview" className="w-full mt-8 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 cursor-pointer">Ir para Preview</Link>
+                    }
                 </form>
             </div>
 
