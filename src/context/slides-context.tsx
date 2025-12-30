@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 
 export interface Slide {
     id: number
@@ -7,9 +7,17 @@ export interface Slide {
     content: string
 }
 
-interface SlidesContextValue {
+export interface Carousel {
+    id: number
+    topic: string
     slides: Slide[]
-    setSlides: (s: Slide[]) => void
+}
+
+interface SlidesContextValue {
+    carousels: Carousel[]
+    setCarousels: (c: Carousel[]) => void
+    selectedCarouselIndex: number
+    setSelectedCarouselIndex: (i: number) => void
     currentSlideIndex: number
     setCurrentSlideIndex: (i: number) => void
     topic: string
@@ -17,36 +25,55 @@ interface SlidesContextValue {
     level: string
     setLevel: (l: string) => void
     handleEditSlide: (field: 'title' | 'content', value: string) => void
-    handleRemoveSlide: (slideIndexToRemove: number) => void
+    addSlideToCurrent: () => void
+    removeSlideFromCurrent: (index: number) => void
 }
 
 export const SlidesContext = createContext<SlidesContextValue | undefined>(undefined)
 
 export const SlidesProvider = ({ children }: { children: ReactNode }) => {
-    const [slides, setSlides] = useState<Slide[]>([])
+    const [carousels, setCarousels] = useState<Carousel[]>([])
 
+    const [selectedCarouselIndex, setSelectedCarouselIndex] = useState(0)
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
     const [topic, setTopic] = useState('')
     const [level, setLevel] = useState('Iniciante')
 
     const handleEditSlide = (field: 'title' | 'content', value: string) => {
-        const newSlides = [...slides]
-        newSlides[currentSlideIndex] = { ...newSlides[currentSlideIndex], [field]: value }
-        setSlides(newSlides)
+        const cIndex = selectedCarouselIndex
+        if (cIndex == null || !carousels[cIndex]) return
+        const newCarousels = [...carousels]
+        const slides = [...newCarousels[cIndex].slides]
+        slides[currentSlideIndex] = { ...slides[currentSlideIndex], [field]: value }
+        newCarousels[cIndex] = { ...newCarousels[cIndex], slides }
+        setCarousels(newCarousels)
     }
 
-    const handleRemoveSlide = (slideIndexToRemove: number) => {
-        const newSlides = [...slides]
-        setSlides(newSlides.filter((_, index) => index !== slideIndexToRemove))
-        
-        if (currentSlideIndex >= slideIndexToRemove) {
-            setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))
-        }
+    const addSlideToCurrent = () => {
+        const cIndex = selectedCarouselIndex
+        if (cIndex == null || !carousels[cIndex]) return
+        const newCarousels = [...carousels]
+        const slides = [...newCarousels[cIndex].slides]
+        const newSlide: Slide = { id: slides.length, type: 'default', title: '', content: '' }
+        slides.push(newSlide)
+        newCarousels[cIndex] = { ...newCarousels[cIndex], slides }
+        setCarousels(newCarousels)
+        setCurrentSlideIndex(slides.length - 1)
+    }
+
+    const removeSlideFromCurrent = (index: number) => {
+        const cIndex = selectedCarouselIndex
+        if (cIndex == null || !carousels[cIndex]) return
+        const newCarousels = [...carousels]
+        const slides = newCarousels[cIndex].slides.filter((_, i) => i !== index).map((s, i) => ({ ...s, id: i }))
+        newCarousels[cIndex] = { ...newCarousels[cIndex], slides }
+        setCarousels(newCarousels)
+        setCurrentSlideIndex((prev) => Math.max(0, Math.min(prev, slides.length - 1)))
     }
 
     return (
         <SlidesContext.Provider
-            value={{ slides, setSlides, currentSlideIndex, setCurrentSlideIndex, topic, setTopic, level, setLevel, handleEditSlide, handleRemoveSlide }}
+            value={{ carousels, setCarousels, selectedCarouselIndex, setSelectedCarouselIndex, currentSlideIndex, setCurrentSlideIndex, topic, setTopic, level, setLevel, handleEditSlide, addSlideToCurrent, removeSlideFromCurrent }}
         >
             {children}
         </SlidesContext.Provider>
@@ -59,4 +86,4 @@ export const useSlides = () => {
     return ctx
 }
 
-export default SlidesContext
+

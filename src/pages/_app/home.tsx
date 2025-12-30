@@ -1,11 +1,13 @@
 import { useSlides } from '../../context/slides-context'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Wand2, Sparkles, Zap } from 'lucide-react'
-import OpenAI from 'openai'
 // @ts-ignore
 import systemPrompt from '../../../docs/system-prompt.md?raw'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import parseTopics from '../../utils/parseTopics'
+import { requestCarouselsRaw } from '../../services/openai'
+import parseCarouselsFromRaw from '../../utils/parseOpenAIResponse'
 
 export const Route = createFileRoute('/home')({
     head: () => ({
@@ -17,52 +19,41 @@ export const Route = createFileRoute('/home')({
     component: Home,
 })
 
-const client = new OpenAI({
-    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true,
-})
+
 
 
 function Home() {
-    const { topic, setTopic, level, setLevel, slides, setSlides, setCurrentSlideIndex } = useSlides()
+    const { topic, setTopic, level, setLevel, carousels, setCarousels, setCurrentSlideIndex, setSelectedCarouselIndex } = useSlides()
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
 
     const handleSubmitForm = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
+
+        const topics = parseTopics(topic, 3)
+        if (topics.length === 0) {
+            alert('Por favor, insira ao menos um tema.')
+            setLoading(false)
+            return
+        }
+
         try {
-            const userMessage = `Crie um carrossel de slides sobre o tema "${topic}" com nível de profundidade "${level}". Retorne apenas um JSON no formato: { "slides": [ { "title": "", "content": "" }, ... ] } com entre 3 e 8 slides. NÃO inclua nenhum campo de cor/background (bg) nos objetos.`
+            const raw = await requestCarouselsRaw(topics, level, systemPrompt)
+            const carouselsResult = parseCarouselsFromRaw(raw, topics)
 
-            const response = await client.responses.create({
-                model: 'gpt-4o',
-                input: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userMessage },
-                ],
-            })
-
-            const raw = response.output_text || JSON.stringify(response.output)
-            // tenta extrair JSON do texto retornado
-            const jsonStart = raw.indexOf('{')
-            const jsonText = jsonStart !== -1 ? raw.slice(jsonStart) : raw
-            const parsed = JSON.parse(jsonText)
-            const slides = (parsed.slides || []).map((s: any, i: number) => ({ id: i, type: 'default', title: s.title || '', content: s.content || '' }))
-
-
-            setSlides(slides)
+            setCarousels(carouselsResult)
+            setSelectedCarouselIndex(0)
             setCurrentSlideIndex(0)
 
-            navigate({ to: '/preview' });
-
+            navigate({ to: '/preview' })
         } catch (err) {
             console.error(err)
-            alert('Erro ao gerar slides. Veja o console para detalhes.')
+            alert('Erro ao gerar carrosséis. Veja o console para detalhes.')
         } finally {
             setLoading(false)
         }
     }
-
 
     return (
         <div className="relative min-h-full bg-linear-to-br from-indigo-50 via-white to-purple-50 p-8 flex flex-col">
@@ -139,7 +130,7 @@ function Home() {
                         {loading ? 'Gerando Slides...' : 'Gerar Carrossel de Slides'}
                     </button>
                     {
-                        slides.length > 0 && <Link to="/preview" className="w-full mt-8 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 cursor-pointer">Ir para Preview</Link>
+                        carousels.length > 0 && <Link to="/preview" className="w-full mt-8 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 cursor-pointer">Ir para Preview</Link>
                     }
                 </form>
             </div>
