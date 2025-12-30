@@ -61,12 +61,12 @@ function Home() {
             <div className="mb-8">
                 <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-5 h-5 text-indigo-600" />
-                    <h1 className="text-3xl font-black bg-linear-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-xl md:text-3xl font-black bg-linear-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent mb-2">
                         Crie Carrosséis Incríveis
                     </h1>
 
                 </div>
-                <p className="text-gray-600 text-lg max-w-md">
+                <p className="text-gray-600 text-md md:text-lg max-w-md">
                     Transforme suas ideias em carrosséis de redes sociais com inteligência artificial
                 </p>
             </div>
@@ -93,7 +93,7 @@ function Home() {
                     {/* Level Selection */}
                     <div>
                         <label className="block text-sm font-bold text-gray-800 mb-3">Nível de Profundidade</label>
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                             {['Iniciante', 'Intermediário', 'Avançado'].map((opt) => (
                                 <button
                                     key={opt}
@@ -124,7 +124,7 @@ function Home() {
                     <button
                         type="submit"
                         disabled={topic.length === 0 || loading}
-                        className="w-full mt-8 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 cursor-pointer"
+                        className="text-sm md:text-lg w-full mt-8 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 cursor-pointer"
                     >
                         <Wand2 size={20} />
                         {loading ? 'Gerando Slides...' : 'Gerar Carrossel de Slides'}
