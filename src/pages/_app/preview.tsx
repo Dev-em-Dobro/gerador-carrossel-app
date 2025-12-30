@@ -34,6 +34,27 @@ function Preview() {
     const carousel = carousels[selectedCarouselIndex]
     const slides = carousel.slides
 
+    const isCodeLike = (text?: string) => {
+        if (!text) return false
+        const codeIndicators = ['`', 'function ', 'const ', 'let ', 'var ', 'def ', 'class ', '=>', ';', '{', '}']
+        const hasNewline = text.includes('\n')
+        const indicators = codeIndicators.some((k) => text.includes(k))
+        return hasNewline || indicators
+    }
+
+    const getLogoName = (logo?: string) => {
+        if (!logo) return null
+        const parts = logo.split(':')
+        return parts.length > 1 ? parts[1] : parts[0]
+    }
+
+    const getLogoFilename = (logo?: string) => {
+        const name = getLogoName(logo)
+
+        if (!name) return null
+        return name.replaceAll(/[^a-z0-9_-]/gi, '').toLowerCase()
+    }
+
     return (
         <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 p-8 flex flex-col justify-center">
             <div className="mb-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-3">
@@ -80,9 +101,44 @@ function Preview() {
                                 <button onClick={addSlideToCurrent} className="px-4 py-2 bg-green-600 rounded-lg font-bold text-white cursor-pointer hover:bg-green-700">Adicionar Slide</button>
                             </div>
                         </div>
-                        <div className="p-8 rounded-xl text-white bg-indigo-800 h-96 flex flex-col justify-center shadow-lg">
-                            <h3 className="text-2xl font-bold mb-2">{slides[currentSlideIndex]?.title}</h3>
-                            <p className="text-base">{slides[currentSlideIndex]?.content}</p>
+                        <div className="shadow-bg">
+                            <div
+                                className="carousel-preview bg-center bg-cover flex items-center justify-center text-white h-96 bg-[#212121]"
+                            >
+                                <div className="carousel-preview__overlay" />
+
+                                <div className="carousel-preview__dots" aria-hidden>
+                                    <span className="dot-1" />
+                                    <span className="dot-2" />
+                                    <span className="dot-3" />
+                                </div>
+
+                                <div className="p-8 carousel-preview__content flex flex-col justify-center gap-3 w-full relative h-full">
+                                    {currentSlideIndex === 0 && (
+                                        <div className=" text-indigo-800 rounded-full text-sm font-semibold shadow self-start gap-2">
+                                            {(() => {
+                                                const filename = getLogoFilename(carousel.language_logo)
+                                                if (!filename) return null
+                                                const src = `/images/logos/${filename}.png`
+                                                return (
+                                                    <img
+                                                        src={src}
+                                                        alt={filename}
+                                                        className="w-20 h-20"
+                                                    />
+                                                )
+                                            })()}
+                                        </div>
+                                    )}
+
+                                    <h3 className="text-2xl font-bold font-['AnkaCoderRegular'] mb-2">{slides[currentSlideIndex]?.title}</h3>
+                                    {isCodeLike(slides[currentSlideIndex]?.content) ? (
+                                        <pre className="whitespace-pre-wrap font-mono text-sm bg-white/10 p-3 rounded">{slides[currentSlideIndex]?.content}</pre>
+                                    ) : (
+                                        <p className="text-base font-['AnkaCoderRegular']">{slides[currentSlideIndex]?.content}</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

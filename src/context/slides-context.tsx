@@ -11,6 +11,7 @@ export interface Carousel {
     id: number
     topic: string
     slides: Slide[]
+    language_logo?: string
 }
 
 interface SlidesContextValue {

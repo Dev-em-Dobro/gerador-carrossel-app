@@ -1,1 +1,67 @@
 @import "tailwindcss";
+
+
+@font-face {
+    font-family: 'AnkaCoderRegular';
+    src: url('/fonts/AnkaCoder-r.ttf');
+}
+
+/* Carousel preview responsive sizing */
+.carousel-preview {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    max-width: 520px;
+    border-radius: 0.75rem;
+    /* match rounded-xl */
+    overflow: hidden;
+    position: relative;
+}
+
+@media (min-width: 768px) {
+    .carousel-preview {
+        aspect-ratio: 16 / 9;
+        max-width: 720px;
+    }
+}
+
+.carousel-preview__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.22));
+    pointer-events: none;
+}
+
+.carousel-preview__content {
+    position: relative;
+    /* above overlay */
+    z-index: 2;
+}
+
+/* Decorative fixed dots (top-left) inside carousel preview */
+.carousel-preview__dots {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    display: flex;
+    gap: 8px;
+    z-index: 3;
+}
+
+.carousel-preview__dots span {
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    display: inline-block;
+}
+
+.carousel-preview__dots .dot-1 {
+    background: #f87171;
+}
+
+.carousel-preview__dots .dot-2 {
+    background: #fbbf24;
+}
+
+.carousel-preview__dots .dot-3 {
+    background: #2ACA44;
+}
