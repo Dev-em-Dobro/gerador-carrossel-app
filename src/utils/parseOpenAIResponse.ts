@@ -6,7 +6,7 @@ export function parseCarouselsFromRaw(raw: string, topics: string[]): Carousel[]
     const arrText = raw.slice(arrStart)
 
     const lastBracket = arrText.lastIndexOf(']')
-    const jsonText = lastBracket !== -1 ? arrText.slice(0, lastBracket + 1) : arrText
+    const jsonText = lastBracket === -1 ? arrText : arrText.slice(0, lastBracket + 1)
 
     const parsed = JSON.parse(jsonText)
     if (!Array.isArray(parsed)) throw new Error('Resposta não é um array')

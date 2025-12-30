@@ -1,8 +1,9 @@
 import { Link } from '@tanstack/react-router'
 import { useSlides } from '../../context/slides-context'
+import { ArrowBigLeft } from 'lucide-react'
 
 function Editor() {
-    const { carousels, selectedCarouselIndex, currentSlideIndex, setCurrentSlideIndex, handleEditSlide, addSlideToCurrent, removeSlideFromCurrent } = useSlides()
+    const { carousels, selectedCarouselIndex, currentSlideIndex, setCurrentSlideIndex, handleEditSlide } = useSlides()
 
     if (!carousels || carousels.length === 0) {
         return (
@@ -35,28 +36,28 @@ function Editor() {
                         value={slides[currentSlideIndex]?.content || ''}
                         onChange={(e) => handleEditSlide('content', e.target.value)}
                         rows={6}
-                        className="w-full mt-2 p-3 border-2 border-gray-100 rounded-lg bg-gray-50 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                        className="w-full mt-2 p-3 border-2 border-gray-100 rounded-lg bg-gray-50 resize-none focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                     />
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between gap-3">
                     <button
                         onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
-                        className="px-4 py-2 bg-gray-100 rounded-lg shadow-sm hover:bg-gray-200"
+                        aria-label="Slide anterior"
+                        className="w-12 h-12 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-100 cursor-pointer"
                     >
-                        Anterior
+                        <ArrowBigLeft size={20} className="text-indigo-700" />
                     </button>
+
                     <button
                         onClick={() => setCurrentSlideIndex(Math.min(slides.length - 1, currentSlideIndex + 1))}
-                        className="px-4 py-2 bg-gray-100 rounded-lg shadow-sm hover:bg-gray-200"
+                        aria-label="Próximo slide"
+                        className="w-12 h-12 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-100 cursor-pointer"
                     >
-                        Próximo
+                        <ArrowBigLeft size={20} className="text-indigo-700 rotate-180" />
                     </button>
                 </div>
-                <div className="flex gap-2">
-                    <button onClick={addSlideToCurrent} className="px-4 py-2 bg-green-100 rounded-lg">Adicionar Slide</button>
-                    <button onClick={() => removeSlideFromCurrent(currentSlideIndex)} className="px-4 py-2 bg-red-100 rounded-lg">Remover Slide</button>
-                </div>
+
             </div>
         </div>
     )
