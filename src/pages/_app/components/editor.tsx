@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { useSlides } from '../../context/slides-context'
+import { useSlides } from '../../../context/slides-context'
 import { ArrowBigLeft } from 'lucide-react'
 
 function Editor() {
