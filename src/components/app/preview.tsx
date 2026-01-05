@@ -2,9 +2,9 @@ import { useSlides } from "@/context/slides-context"
 import { getLogoFilename, isCodeLike } from "@/utils/logoUtils"
 
 
-function CarouselPreview(){
+function CarouselPreview() {
     const { carousels, currentSlideIndex, addSlideToCurrent, removeSlideFromCurrent, selectedCarouselIndex } = useSlides()
-    
+
     const carousel = carousels[selectedCarouselIndex]
     const slides = carousel.slides
 
