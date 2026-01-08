@@ -5,18 +5,64 @@ const client = new OpenAI({
     dangerouslyAllowBrowser: true,
 })
 
-export async function requestCarouselsRaw(topics: string[], systemPrompt: string) {
-    const userMessage = `Gere carrosséis separados para os seguintes temas na ordem: ${topics.join(' | ')}.\n\nREGRAS IMPORTANTES:\n- Responda SOMENTE com um JSON válido: um ARRAY com um objeto para cada tema.\n- Cada objeto deve ter: { "topic": "<tema>", "slides": [ { "title": "...", "content": "..." }, ... ] }\n- Cada carrossel deve conter entre 3 e 8 slides.\n- Não inclua campos de cor, HTML ou qualquer texto explicativo fora do JSON.\n\nExemplo de saída:\n[ { "topic": "Tema A", "slides": [ { "title": "T1", "content": "..." } ] }, { "topic": "Tema B", "slides": [ ... ] } ]`
+export async function requestCarouselsRaw(topics: string[], systemPrompt: string, level: string) {
+    const isSingleTopic = topics.length === 1
+    
+    let userMessage: string
+    
+    if (isSingleTopic) {
+        userMessage = `Tema: ${topics[0]}
+Público: ${level}
 
-    const response = await client.responses.create({
-        model: 'gpt-4o',
-        input: [
+IMPORTANTE: Retorne APENAS um array JSON válido de 10 objetos (slides), começando com [ e terminando com ].
+Não adicione texto antes ou depois do JSON.
+
+Exemplo de formato esperado:
+[
+  { "id": 1, "type": "intro", "title": "...", "content": "...", "visual_suggestion": "...", "language_logo": "typescript" },
+  { "id": 2, "type": "problem", "title": "...", "content": "...", "visual_suggestion": "..." },
+  ...
+]`
+    } else {
+        userMessage = `Temas: ${topics.join(' | ')}
+Público: ${level}
+
+IMPORTANTE: Gere um carrossel SEPARADO para CADA tema listado acima.
+Retorne APENAS um array JSON válido com um objeto para cada tema.
+Cada objeto deve ter: "topic" (nome do tema) e "slides" (array de 10 slides).
+
+Formato esperado:
+[
+  {
+    "topic": "Tema 1",
+    "slides": [
+      { "id": 1, "type": "intro", "title": "...", "content": "...", "visual_suggestion": "...", "language_logo": "..." },
+      { "id": 2, "type": "problem", "title": "...", "content": "...", "visual_suggestion": "..." },
+      ...
+    ]
+  },
+  {
+    "topic": "Tema 2",
+    "slides": [
+      { "id": 1, "type": "intro", "title": "...", "content": "...", "visual_suggestion": "...", "language_logo": "..." },
+      ...
+    ]
+  }
+]
+
+Não adicione texto antes ou depois do JSON.`
+    }
+
+    const response = await client.chat.completions.create({
+        model: 'gpt-5.2',
+        messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userMessage },
         ],
+        temperature: 0.7,
     })
 
-    return response.output_text || JSON.stringify(response.output || '')
+    return response.choices[0]?.message?.content || ''
 }
 
 export default requestCarouselsRaw

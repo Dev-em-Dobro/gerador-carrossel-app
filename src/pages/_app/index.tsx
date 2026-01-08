@@ -39,7 +39,7 @@ function Home() {
         }
 
         try {
-            const raw = await requestCarouselsRaw(topics, systemPrompt)
+            const raw = await requestCarouselsRaw(topics, systemPrompt, level)
             const carouselsResult = parseCarouselsFromRaw(raw, topics)
 
             setCarousels(carouselsResult)

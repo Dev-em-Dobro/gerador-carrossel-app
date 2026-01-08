@@ -141,3 +141,5 @@ vite.config.ts.timestamp-*
 # Docs
 prd.md
 system-prompt.md
+guia-ganchos-virais.md
+viral-hooks.pdf
