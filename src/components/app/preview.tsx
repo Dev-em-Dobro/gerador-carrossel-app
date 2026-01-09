@@ -17,8 +17,8 @@ function CarouselPreview() {
         if (!currentSlide?.content) return null
 
         if (isCodeLike(currentSlide.content) && parsedContent) {
-            const { text, code, textAfter } = parsedContent
-            
+            const { text, code } = parsedContent
+
             return (
                 <div className="flex flex-col gap-4">
                     {text && (
@@ -27,15 +27,10 @@ function CarouselPreview() {
                         </p>
                     )}
                     {code && (
-                        <CodeWindow 
+                        <CodeWindow
                             code={code}
                             title={currentSlide.title}
                         />
-                    )}
-                    {textAfter && (
-                        <p className="text-base font-['AnkaCoderRegular'] leading-relaxed mt-2">
-                            {textAfter}
-                        </p>
                     )}
                 </div>
             )
@@ -92,7 +87,7 @@ function CarouselPreview() {
                         <h3 className="text-2xl font-bold font-['AnkaCoderRegular'] mb-2">
                             {currentSlide?.title}
                         </h3>
-                        
+
                         {renderContent()}
                     </div>
                 </div>

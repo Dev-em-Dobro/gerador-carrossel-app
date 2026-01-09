@@ -20,6 +20,12 @@ interface CodeWindowProps {
 }
 
 const detectLanguage = (code: string): string => {
+    const hasHTMLTags = /<(!DOCTYPE|html|head|body|div|span|p|h[1-6]|a|img|ul|ol|li|table|form|input|button|script|style|meta|link)/i.test(code)
+
+    if (hasHTMLTags) {
+        return 'markup'
+    }
+
     const hasJSXSyntax = /<[A-Z][a-zA-Z0-9]*/.test(code) ||
         /<\/[A-Z][a-zA-Z0-9]*>/.test(code) ||
         /className=/.test(code) ||
@@ -28,8 +34,7 @@ const detectLanguage = (code: string): string => {
 
     const hasTypeScript = /:\s*(string|number|boolean|any|void|unknown|never)/.test(code) ||
         /interface\s+\w+/.test(code) ||
-        /type\s+\w+\s*=/.test(code) ||
-        /<[A-Z]\w*>/.test(code) && code.includes('Props')
+        /type\s+\w+\s*=/.test(code)
 
     if (hasJSXSyntax) {
         return hasTypeScript ? 'tsx' : 'jsx'
@@ -73,30 +78,22 @@ const getLanguageLabel = (lang: string): string => {
         css: 'CSS',
         json: 'JSON',
         bash: 'Bash',
-        sql: 'SQL'
+        sql: 'SQL',
+        markup: 'HTML',
+        html: 'HTML'
     }
     return labels[lang] || lang.toUpperCase()
-}
-
-const processCode = (code: string): string => {
-    return code
-        .replace(/\\n/g, '\n')
-        .replace(/\\t/g, '  ')
-        .replace(/\\"/g, '"')
-        .replace(/\\'/g, "'")
-        .replace(/\\\\/g, '\\')
 }
 
 export function CodeWindow({ code, language, title }: CodeWindowProps) {
     const codeRef = useRef<HTMLElement>(null)
     const detectedLanguage = language || detectLanguage(code)
-    const processedCode = processCode(code)
 
     useEffect(() => {
         if (codeRef.current) {
             Prism.highlightElement(codeRef.current)
         }
-    }, [processedCode, detectedLanguage])
+    }, [code, detectedLanguage])
 
     return (
         <div className="rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border border-white/10">
@@ -119,7 +116,7 @@ export function CodeWindow({ code, language, title }: CodeWindowProps) {
             <div className="p-4 overflow-x-auto">
                 <pre className="!bg-transparent !p-0 !m-0 text-sm">
                     <code ref={codeRef} className={`language-${detectedLanguage} !text-sm`}>
-                        {processedCode}
+                        {code}
                     </code>
                 </pre>
             </div>

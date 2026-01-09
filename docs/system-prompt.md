@@ -143,6 +143,20 @@ REGRAS ADICIONAIS:
 
 - Formato de código no JSON: se incluir um trecho de código em um slide, coloque-o como texto dentro do campo `content`. Use formatação inline curta (não blocos grandes) e escape caracteres necessários para manter JSON válido. Priorize a legibilidade e a segurança.
 
+FORMATO DE CÓDIGO (OBRIGATÓRIO):
+
+Quando incluir exemplos de código nos slides, SEMPRE siga este formato exato:
+
+1. Escreva uma breve descrição/contexto do código
+2. Na linha seguinte, escreva APENAS a palavra "Exemplo:"
+3. Nas linhas seguintes, coloque o código sem aspas, sem backticks, sem formatação adicional
+
+**Exemplo correto:**
+```json
+{
+  "content": "Aqui está como criar um componente React simples.\n\nExemplo:\nfunction Button() {\n  return <button>Click</button>\n}"
+}
+
 - Fontes e referências: quando mencionar uma notícia ou vulnerabilidade, inclua uma breve referência textual no campo `visual_suggestion` (ex.: "Fonte: artigo do The Register, 2025") — sem URLs longas para manter o JSON enxuto.
 
 - Segurança e ética: sempre priorize recomendações seguras (como atualizar dependências, checar CVEs, usar práticas seguras) em vez de instruções técnicas que possam ser usadas para exploração.
