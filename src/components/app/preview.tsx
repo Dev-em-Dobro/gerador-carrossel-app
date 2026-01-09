@@ -1,12 +1,52 @@
 import { useSlides } from "@/context/slides-context"
 import { getLogoFilename, isCodeLike } from "@/utils/logoUtils"
-
+import { CodeWindow } from "@/components/ui/code-window"
+import { parseContentWithCode } from "@/utils/contentParser"
 
 function CarouselPreview() {
     const { carousels, currentSlideIndex, addSlideToCurrent, removeSlideFromCurrent, selectedCarouselIndex } = useSlides()
 
     const carousel = carousels[selectedCarouselIndex]
     const slides = carousel.slides
+    const currentSlide = slides[currentSlideIndex]
+
+    const parsedContent = currentSlide?.content ? parseContentWithCode(currentSlide.content) : null
+    const hasCodeBlock = parsedContent?.code && parsedContent.code.length > 0
+
+    const renderContent = () => {
+        if (!currentSlide?.content) return null
+
+        if (isCodeLike(currentSlide.content) && parsedContent) {
+            const { text, code, textAfter } = parsedContent
+            
+            return (
+                <div className="flex flex-col gap-4">
+                    {text && (
+                        <p className="text-base font-['AnkaCoderRegular'] leading-relaxed">
+                            {text}
+                        </p>
+                    )}
+                    {code && (
+                        <CodeWindow 
+                            code={code}
+                            title={currentSlide.title}
+                        />
+                    )}
+                    {textAfter && (
+                        <p className="text-base font-['AnkaCoderRegular'] leading-relaxed mt-2">
+                            {textAfter}
+                        </p>
+                    )}
+                </div>
+            )
+        }
+
+        return (
+            <p className="text-base font-['AnkaCoderRegular']">
+                {currentSlide.content}
+            </p>
+        )
+    }
 
     return (
         <div className='flex flex-col gap-3'>
@@ -23,15 +63,17 @@ function CarouselPreview() {
                 >
                     <div className="carousel-preview__overlay" />
 
-                    <div className="carousel-preview__dots" aria-hidden>
-                        <span className="dot-1" />
-                        <span className="dot-2" />
-                        <span className="dot-3" />
-                    </div>
+                    {!hasCodeBlock && (
+                        <div className="carousel-preview__dots" aria-hidden>
+                            <span className="dot-1" />
+                            <span className="dot-2" />
+                            <span className="dot-3" />
+                        </div>
+                    )}
 
-                    <div className="p-8 carousel-preview__content flex flex-col justify-center gap-3 w-full relative h-full">
+                    <div className="p-8 carousel-preview__content flex flex-col justify-center gap-3 w-full relative h-full overflow-y-auto">
                         {currentSlideIndex === 0 && (
-                            <div className=" text-indigo-800 rounded-full text-sm font-semibold shadow self-start gap-2">
+                            <div className="text-indigo-800 rounded-full text-sm font-semibold shadow self-start gap-2">
                                 {(() => {
                                     const filename = getLogoFilename(carousel.language_logo)
                                     if (!filename) return null
@@ -47,12 +89,11 @@ function CarouselPreview() {
                             </div>
                         )}
 
-                        <h3 className="text-2xl font-bold font-['AnkaCoderRegular'] mb-2">{slides[currentSlideIndex]?.title}</h3>
-                        {isCodeLike(slides[currentSlideIndex]?.content) ? (
-                            <pre className="whitespace-pre-wrap font-mono text-sm bg-white/10 p-3 rounded">{slides[currentSlideIndex]?.content}</pre>
-                        ) : (
-                            <p className="text-base font-['AnkaCoderRegular']">{slides[currentSlideIndex]?.content}</p>
-                        )}
+                        <h3 className="text-2xl font-bold font-['AnkaCoderRegular'] mb-2">
+                            {currentSlide?.title}
+                        </h3>
+                        
+                        {renderContent()}
                     </div>
                 </div>
             </div>
