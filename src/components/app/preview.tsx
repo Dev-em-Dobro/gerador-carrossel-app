@@ -2,9 +2,14 @@ import { useSlides } from "@/context/slides-context"
 import { getLogoFilename, isCodeLike } from "@/utils/logoUtils"
 import { CodeWindow } from "@/components/ui/code-window"
 import { parseContentWithCode } from "@/utils/contentParser"
+import { exportCarouselAsZip, type ExportProgress } from "@/utils/exportCarousel"
+import { ExportProgressModal } from "@/components/shared/export-progress-modal"
+import { Download } from "lucide-react"
+import { useState } from "react"
 
 function CarouselPreview() {
     const { carousels, currentSlideIndex, addSlideToCurrent, removeSlideFromCurrent, selectedCarouselIndex } = useSlides()
+    const [exportProgress, setExportProgress] = useState<ExportProgress | null>(null)
 
     const carousel = carousels[selectedCarouselIndex]
     const slides = carousel.slides
@@ -12,6 +17,19 @@ function CarouselPreview() {
 
     const parsedContent = currentSlide?.content ? parseContentWithCode(currentSlide.content) : null
     const hasCodeBlock = parsedContent?.code && parsedContent.code.length > 0
+
+    const handleExportAll = async () => {
+        try {
+            await exportCarouselAsZip(carousel, (progress) => {
+                setExportProgress(progress)
+            })
+        } catch (error) {
+            console.error('Erro ao exportar carrossel:', error)
+            alert('Erro ao exportar carrossel. Por favor, tente novamente.')
+        } finally {
+            setExportProgress(null)
+        }
+    }
 
     const renderContent = () => {
         if (!currentSlide?.content) return null
@@ -45,9 +63,19 @@ function CarouselPreview() {
 
     return (
         <div className='flex flex-col gap-3'>
+            {exportProgress && <ExportProgressModal progress={exportProgress} />}
+
             <div className='flex flex-col sm:flex-row gap-3 items-center justify-between'>
                 <h3 className="text-sm uppercase tracking-wide text-gray-500 font-bold">Preview do Slide Atual</h3>
                 <div className="flex gap-2">
+                    <button
+                        onClick={handleExportAll}
+                        disabled={!!exportProgress}
+                        className="px-4 py-2 bg-blue-600 rounded-lg font-bold text-white cursor-pointer hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        <Download size={18} />
+                        Exportar Carrossel
+                    </button>
                     <button onClick={() => removeSlideFromCurrent(currentSlideIndex)} className="px-4 py-2 bg-red-500 rounded-lg font-bold text-white cursor-pointer hover:bg-red-600">Remover Slide</button>
                     <button onClick={addSlideToCurrent} className="px-4 py-2 bg-green-600 rounded-lg font-bold text-white cursor-pointer hover:bg-green-700">Adicionar Slide</button>
                 </div>
