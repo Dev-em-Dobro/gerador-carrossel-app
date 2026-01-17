@@ -9,7 +9,6 @@ TOM DE VOZ E COMUNICAÇÃO (OBRIGATÓRIO):
 Siga rigorosamente o DNA de comunicação definido no manifesto da marca:
 
 **Estilo Conversacional:**
-- Use "tu" em vez de "você": "Tu precisa", "Tu vai", "Tu consegue"
 - Use "a gente" em vez de "nós": "A gente vai te mostrar"
 - Seja informal e acessível: fale como se estivesse conversando entre amigos
 - Crie sensação de comunidade: "pessoal", "galera", "dev"
@@ -45,13 +44,13 @@ Siga rigorosamente o DNA de comunicação definido no manifesto da marca:
 - ❌ Expressões não autênticas: "Bora" (isoladamente), "Falou, abraço!", "Isso mesmo, né?"
 - ❌ Tom corporativo ou acadêmico
 - ❌ Frases longas e complexas
-- ❌ Promessas irreais: "Em 7 dias tu vai ser sênior"
+- ❌ Promessas irreais: "Em 7 dias você vai ser sênior"
 
 **Exemplos de Aplicação:**
-- ✅ "E aí, pessoal! Tu já passou por isso, né?"
-- ✅ "Basicamente, tu precisa fazer 3 coisas..."
-- ✅ "Tu vai quebrar a cara no começo, mas é assim que a gente aprende"
-- ✅ "Com certeza tu consegue, só precisa botar a mão na massa"
+- ✅ "E aí, pessoal! Você já passou por isso, né?"
+- ✅ "Basicamente, você precisa fazer 3 coisas..."
+- ✅ "Você vai quebrar a cara no começo, mas é assim que a gente aprende"
+- ✅ "Com certeza você consegue, só precisa botar a mão na massa"
 - ❌ "Você deverá comunicar-se de forma eficiente"
 - ❌ "Mediante análise criteriosa dos requisitos..."
 
@@ -73,12 +72,12 @@ O Slide 1 (Gancho) é o mais importante. Siga estas diretrizes:
 - Fale de problemas reais e mensuráveis
 - Use linguagem direta e sem rodeios
 - Crie curiosidade com promessas concretas
-- Aplique o tom conversacional: use "tu" e seja direto
+- Aplique o tom conversacional: use "você" e seja direto
 
 **Categorias de Ganchos (escolha a mais adequada ao tema):**
 
-1. **Problema Urgente**: "Teu {tecnologia} tá {problema} e tu nem percebeu"
-   - Exemplo: "Teu JavaScript tá 3x mais lento por causa disso"
+1. **Problema Urgente**: "Sua {tecnologia} tá {problema} e você nem percebeu"
+   - Exemplo: "Seu JavaScript tá 3x mais lento por causa disso"
 
 2. **Revelação/Segredo**: "O truque de {tecnologia} que ninguém te conta"
    - Exemplo: "O truque de TypeScript que ninguém te conta"
@@ -98,8 +97,8 @@ O Slide 1 (Gancho) é o mais importante. Siga estas diretrizes:
 7. **Lista Numérica**: "{Número} {coisas} que {resultado positivo}"
    - Exemplo: "3 patterns que salvam 10h/semana"
 
-8. **Urgência/FOMO**: "{Tecnologia} mudou. Tu precisa saber isso"
-   - Exemplo: "React 19 mudou. Tu precisa saber isso"
+8. **Urgência/FOMO**: "{Tecnologia} mudou. Você precisa saber isso"
+   - Exemplo: "React 19 mudou. Você precisa saber isso"
 
 **PROIBIDO no Slide 1:**
 - ❌ "Você sabia que..."

@@ -31,7 +31,7 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
     const parsedContent = parseContentWithCode(slide.content)
     const hasCodeBlock = isCodeLike(slide.content) && parsedContent?.code
 
-    // Criar container principal com estilos inline (evita problemas com oklch do Tailwind 4)
+    // Criar container principal com template de background
     const container = document.createElement('div')
     container.style.cssText = `
         position: absolute;
@@ -39,7 +39,9 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         top: -9999px;
         width: 1080px;
         height: 1350px;
-        background: #212121;
+        background-image: url('/src/assets/template.png');
+        background-size: cover;
+        background-position: center;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -47,75 +49,21 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         overflow: hidden;
     `
 
-    // Overlay com gradiente
-    const overlay = document.createElement('div')
-    overlay.style.cssText = `
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.22));
-        pointer-events: none;
-    `
-    container.appendChild(overlay)
-
-    // Dots decorativos (apenas se não tiver código)
-    if (!hasCodeBlock) {
-        const dots = document.createElement('div')
-        dots.style.cssText = `
-            position: absolute;
-            top: 18px;
-            left: 18px;
-            display: flex;
-            gap: 8px;
-            z-index: 3;
-        `
-        dots.setAttribute('aria-hidden', 'true')
-
-        const dot1 = document.createElement('span')
-        dot1.style.cssText = `
-            width: 20px;
-            height: 20px;
-            border-radius: 9999px;
-            display: inline-block;
-            background: #f87171;
-        `
-
-        const dot2 = document.createElement('span')
-        dot2.style.cssText = `
-            width: 20px;
-            height: 20px;
-            border-radius: 9999px;
-            display: inline-block;
-            background: #fbbf24;
-        `
-
-        const dot3 = document.createElement('span')
-        dot3.style.cssText = `
-            width: 20px;
-            height: 20px;
-            border-radius: 9999px;
-            display: inline-block;
-            background: #2ACA44;
-        `
-
-        dots.appendChild(dot1)
-        dots.appendChild(dot2)
-        dots.appendChild(dot3)
-        container.appendChild(dots)
-    }
-
-    // Content container
+    // Content container - CENTRALIZADO verticalmente
     const content = document.createElement('div')
     content.style.cssText = `
-        padding: 3rem;
+        padding: 80px 60px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        gap: 1rem;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
         width: 100%;
         height: 100%;
         position: relative;
         z-index: 2;
-        overflow-y: auto;
+        box-sizing: border-box;
     `
 
     // Logo (apenas no primeiro slide)
@@ -124,9 +72,9 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         if (filename) {
             const logoDiv = document.createElement('div')
             logoDiv.style.cssText = `
-                align-self: flex-start;
                 display: flex;
-                gap: 0.5rem;
+                justify-content: center;
+                margin-bottom: 0.5rem;
             `
 
             const logoImg = document.createElement('img')
@@ -138,14 +86,17 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
             content.appendChild(logoDiv)
         }
     }
+
+    // Título - centralizado
     const title = document.createElement('h1')
     title.style.cssText = `
-        font-size: 2rem;
-        line-height: 2.5rem;
+        font-size: 2.5rem;
+        line-height: 3rem;
         font-weight: bold;
         font-family: 'AnkaCoderRegular', monospace;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         color: #ffffff;
+        text-align: center;
     `
     title.textContent = slide.title
     content.appendChild(title)
@@ -153,22 +104,28 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
     // Conteúdo
     if (hasCodeBlock && parsedContent) {
         const contentWrapper = document.createElement('div')
-        contentWrapper.style.cssText = 'display: flex; flex-direction: column; gap: 1.5rem;'
+        contentWrapper.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        `
 
-        // Texto antes do código
+        // Texto antes do código - centralizado
         if (parsedContent.text) {
             const textPara = document.createElement('p')
             textPara.style.cssText = `
-                font-size: 1.125rem;
-                line-height: 1.75rem;
+                font-size: 1.75rem;
+                line-height: 2.5rem;
                 font-family: 'AnkaCoderRegular', monospace;
                 color: #ffffff;
+                text-align: center;
             `
             textPara.textContent = parsedContent.text
             contentWrapper.appendChild(textPara)
         }
 
-        // Bloco de código com Prism.js syntax highlighting
+        // Bloco de código com Prism.js syntax highlighting - alinhado à esquerda
         if (parsedContent.code) {
             const language = detectLanguage(parsedContent.code)
 
@@ -179,6 +136,8 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
                 overflow: hidden;
                 box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
                 border: 1px solid rgba(255, 255, 255, 0.1);
+                width: 100%;
+                text-align: left;
             `
 
             // Header do code window (dots + label)
@@ -212,15 +171,15 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
 
             // Code content
             const codeContent = document.createElement('div')
-            codeContent.style.cssText = 'padding: 1rem; overflow-x: auto;'
+            codeContent.style.cssText = 'padding: 1.5rem; overflow-x: auto;'
 
             const pre = document.createElement('pre')
             pre.style.cssText = `
                 margin: 0;
                 padding: 0;
                 background: transparent !important;
-                font-size: 0.875rem;
-                line-height: 1.5;
+                font-size: 1.125rem;
+                line-height: 2;
                 font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
             `
 
@@ -261,13 +220,15 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
 
         content.appendChild(contentWrapper)
     } else {
-        // Apenas texto
+        // Apenas texto - centralizado
         const textPara = document.createElement('p')
         textPara.style.cssText = `
-            font-size: 1.125rem;
-            line-height: 1.75rem;
+            font-size: 1.75rem;
+            line-height: 2.5rem;
             font-family: 'AnkaCoderRegular', monospace;
             color: #ffffff;
+            text-align: center;
+            max-width: 900px;
         `
         textPara.textContent = slide.content
         content.appendChild(textPara)
