@@ -49,15 +49,15 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         overflow: hidden;
     `
 
-    // Content container - alinhado à esquerda, próximo às bolinhas do template
+    // Content container - centralizado
     const content = document.createElement('div')
     content.style.cssText = `
         padding: 260px 60px 80px 60px;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        align-items: flex-start;
-        text-align: left;
+        align-items: center;
+        text-align: center;
         gap: 1.5rem;
         width: 100%;
         max-width: 850px;
@@ -88,7 +88,7 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         }
     }
 
-    // Título - alinhado à esquerda
+    // Título - centralizado
     const title = document.createElement('h1')
     title.style.cssText = `
         font-size: 3rem;
@@ -97,7 +97,7 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         font-family: 'AnkaCoderRegular', monospace;
         margin-bottom: 0.5rem;
         color: #ffffff;
-        text-align: left;
+        text-align: center;
     `
     title.textContent = slide.title
     content.appendChild(title)
@@ -108,7 +108,8 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         contentWrapper.style.cssText = `
             display: flex;
             flex-direction: column;
-            gap: 3rem;
+            align-items: center;
+            gap: 60px;
             width: 100%;
         `
 
@@ -121,6 +122,7 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
                 font-family: 'AnkaCoderRegular', monospace;
                 color: #ffffff;
                 text-align: left;
+                align-self: flex-start;
             `
             textPara.textContent = parsedContent.text
             contentWrapper.appendChild(textPara)
@@ -139,7 +141,7 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 width: fit-content;
                 text-align: left;
-                align-self: flex-start;
+                align-self: center;
             `
 
             // Header do code window (dots + label)
@@ -180,8 +182,8 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
                 margin: 0;
                 padding: 0;
                 background: transparent !important;
-                font-size: 1.375rem;
-                line-height: 2.25;
+                font-size: 1.575rem;
+                line-height: 2.1;
                 font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
             `
 
