@@ -7,9 +7,9 @@ const client = new OpenAI({
 
 export async function requestCarouselsRaw(topics: string[], systemPrompt: string, level: string) {
     const isSingleTopic = topics.length === 1
-    
+
     let userMessage: string
-    
+
     if (isSingleTopic) {
         userMessage = `Tema: ${topics[0]}
 Público: ${level}
@@ -52,6 +52,27 @@ Formato esperado:
 
 Não adicione texto antes ou depois do JSON.`
     }
+
+    const response = await client.chat.completions.create({
+        model: 'gpt-5.2',
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userMessage },
+        ],
+        temperature: 0.7,
+    })
+
+    return response.choices[0]?.message?.content || ''
+}
+
+export async function requestBlogPost(topic: string, systemPrompt: string, level: string): Promise<string> {
+    const userMessage = `Tema: ${topic}
+Público: ${level}
+
+IMPORTANTE: Retorne APENAS o conteúdo do post em formato Markdown válido.
+Não adicione explicações antes ou depois do conteúdo.
+O post deve seguir a estrutura definida no system prompt.
+Comece diretamente com o título usando # (H1).`
 
     const response = await client.chat.completions.create({
         model: 'gpt-5.2',

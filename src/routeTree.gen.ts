@@ -9,53 +9,100 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './pages/__root'
-import { Route as AppIndexRouteImport } from './pages/_app/index'
+import { Route as AppRouteImport } from './pages/_app'
+import { Route as IndexRouteImport } from './pages/index'
 import { Route as AppPreviewRouteImport } from './pages/_app/preview'
+import { Route as AppCarrosselIndexRouteImport } from './pages/_app/carrossel/index'
+import { Route as AppBlogIndexRouteImport } from './pages/_app/blog/index'
+import { Route as AppBlogPreviewRouteImport } from './pages/_app/blog/preview'
 
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/_app/',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppPreviewRoute = AppPreviewRouteImport.update({
-  id: '/_app/preview',
+  id: '/preview',
   path: '/preview',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCarrosselIndexRoute = AppCarrosselIndexRouteImport.update({
+  id: '/carrossel/',
+  path: '/carrossel/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBlogIndexRoute = AppBlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBlogPreviewRoute = AppBlogPreviewRouteImport.update({
+  id: '/blog/preview',
+  path: '/blog/preview',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/preview': typeof AppPreviewRoute
-  '/': typeof AppIndexRoute
+  '/blog/preview': typeof AppBlogPreviewRoute
+  '/blog': typeof AppBlogIndexRoute
+  '/carrossel': typeof AppCarrosselIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/preview': typeof AppPreviewRoute
-  '/': typeof AppIndexRoute
+  '/blog/preview': typeof AppBlogPreviewRoute
+  '/blog': typeof AppBlogIndexRoute
+  '/carrossel': typeof AppCarrosselIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
   '/_app/preview': typeof AppPreviewRoute
-  '/_app/': typeof AppIndexRoute
+  '/_app/blog/preview': typeof AppBlogPreviewRoute
+  '/_app/blog/': typeof AppBlogIndexRoute
+  '/_app/carrossel/': typeof AppCarrosselIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/preview' | '/'
+  fullPaths: '/' | '/preview' | '/blog/preview' | '/blog' | '/carrossel'
   fileRoutesByTo: FileRoutesByTo
-  to: '/preview' | '/'
-  id: '__root__' | '/_app/preview' | '/_app/'
+  to: '/' | '/preview' | '/blog/preview' | '/blog' | '/carrossel'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_app/preview'
+    | '/_app/blog/preview'
+    | '/_app/blog/'
+    | '/_app/carrossel/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AppPreviewRoute: typeof AppPreviewRoute
-  AppIndexRoute: typeof AppIndexRoute
+  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_app/': {
-      id: '/_app/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AppIndexRouteImport
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/preview': {
@@ -63,14 +110,51 @@ declare module '@tanstack/react-router' {
       path: '/preview'
       fullPath: '/preview'
       preLoaderRoute: typeof AppPreviewRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/carrossel/': {
+      id: '/_app/carrossel/'
+      path: '/carrossel'
+      fullPath: '/carrossel'
+      preLoaderRoute: typeof AppCarrosselIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/blog/': {
+      id: '/_app/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof AppBlogIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/blog/preview': {
+      id: '/_app/blog/preview'
+      path: '/blog/preview'
+      fullPath: '/blog/preview'
+      preLoaderRoute: typeof AppBlogPreviewRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
+interface AppRouteChildren {
+  AppPreviewRoute: typeof AppPreviewRoute
+  AppBlogPreviewRoute: typeof AppBlogPreviewRoute
+  AppBlogIndexRoute: typeof AppBlogIndexRoute
+  AppCarrosselIndexRoute: typeof AppCarrosselIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
   AppPreviewRoute: AppPreviewRoute,
-  AppIndexRoute: AppIndexRoute,
+  AppBlogPreviewRoute: AppBlogPreviewRoute,
+  AppBlogIndexRoute: AppBlogIndexRoute,
+  AppCarrosselIndexRoute: AppCarrosselIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
