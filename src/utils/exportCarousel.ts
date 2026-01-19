@@ -49,18 +49,19 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         overflow: hidden;
     `
 
-    // Content container - CENTRALIZADO verticalmente
+    // Content container - alinhado à esquerda, próximo às bolinhas do template
     const content = document.createElement('div')
     content.style.cssText = `
-        padding: 80px 60px;
+        padding: 260px 60px 80px 60px;
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
+        justify-content: flex-start;
+        align-items: flex-start;
+        text-align: left;
         gap: 1.5rem;
         width: 100%;
-        height: 100%;
+        max-width: 850px;
+        height: auto;
         position: relative;
         z-index: 2;
         box-sizing: border-box;
@@ -87,16 +88,16 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         }
     }
 
-    // Título - centralizado
+    // Título - alinhado à esquerda
     const title = document.createElement('h1')
     title.style.cssText = `
-        font-size: 2.5rem;
-        line-height: 3rem;
+        font-size: 3rem;
+        line-height: 3.5rem;
         font-weight: bold;
         font-family: 'AnkaCoderRegular', monospace;
         margin-bottom: 0.5rem;
         color: #ffffff;
-        text-align: center;
+        text-align: left;
     `
     title.textContent = slide.title
     content.appendChild(title)
@@ -107,19 +108,19 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
         contentWrapper.style.cssText = `
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 3rem;
             width: 100%;
         `
 
-        // Texto antes do código - centralizado
+        // Texto antes do código - alinhado à esquerda
         if (parsedContent.text) {
             const textPara = document.createElement('p')
             textPara.style.cssText = `
-                font-size: 1.75rem;
-                line-height: 2.5rem;
+                font-size: 2rem;
+                line-height: 2.75rem;
                 font-family: 'AnkaCoderRegular', monospace;
                 color: #ffffff;
-                text-align: center;
+                text-align: left;
             `
             textPara.textContent = parsedContent.text
             contentWrapper.appendChild(textPara)
@@ -136,8 +137,9 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
                 overflow: hidden;
                 box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
                 border: 1px solid rgba(255, 255, 255, 0.1);
-                width: 100%;
+                width: fit-content;
                 text-align: left;
+                align-self: flex-start;
             `
 
             // Header do code window (dots + label)
@@ -178,8 +180,8 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
                 margin: 0;
                 padding: 0;
                 background: transparent !important;
-                font-size: 1.125rem;
-                line-height: 2;
+                font-size: 1.375rem;
+                line-height: 2.25;
                 font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
             `
 
@@ -220,15 +222,14 @@ function renderSlideToElement(carousel: Carousel, slideIndex: number): HTMLEleme
 
         content.appendChild(contentWrapper)
     } else {
-        // Apenas texto - centralizado
+        // Apenas texto - alinhado à esquerda
         const textPara = document.createElement('p')
         textPara.style.cssText = `
-            font-size: 1.75rem;
-            line-height: 2.5rem;
+            font-size: 2rem;
+            line-height: 2.75rem;
             font-family: 'AnkaCoderRegular', monospace;
             color: #ffffff;
-            text-align: center;
-            max-width: 900px;
+            text-align: left;
         `
         textPara.textContent = slide.content
         content.appendChild(textPara)
@@ -315,7 +316,7 @@ export async function exportCarouselAsZip(
 
         // Adicionar ao zip com nome formatado (slide-01.png, slide-02.png, etc.)
         const slideNumber = String(i + 1).padStart(2, '0')
-        zip.file(`slide-${slideNumber}.png`, blob)
+        zip.file(`slide - ${slideNumber}.png`, blob)
 
         // Remover elemento do DOM
         document.body.removeChild(slideElement)
