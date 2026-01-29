@@ -1,12 +1,16 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 
+// Definindo a interface Slide
 export interface Slide {
     id: number
     type: string
     title: string
     content: string
+    visual_suggestion?: string  // Adicionando a sugestão visual para gerar imagem
+    imageUrl?: string          // URL da imagem gerada
 }
 
+// Definindo a interface Carousel
 export interface Carousel {
     id: number
     topic: string

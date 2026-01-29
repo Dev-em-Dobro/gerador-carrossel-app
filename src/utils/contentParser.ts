@@ -1,3 +1,5 @@
+import { isCodeLike } from "./logoUtils"
+
 export interface ParsedContent {
     text: string
     code?: string
@@ -32,38 +34,48 @@ function normalizeIndentation(code: string): string {
 }
 
 export function parseContentWithCode(content: string): ParsedContent {
-    const processedContent = processEscapeSequences(content)
+  const processed = processEscapeSequences(content);
 
-    const exemploRegex = /Exemplo:\s*\n([\s\S]+?)(?:\n\n|$)/i
-    const exemploMatch = processedContent.match(exemploRegex)
+  // 1. Bloco markdown ``` ```
+  const mdMatch = processed.match(/```([\s\S]*?)```/);
+  if (mdMatch) {
+    const code = normalizeIndentation(mdMatch[1]);
+    const text = processed.replace(mdMatch[0], "").trim();
+    return { text, code };
+  }
 
-    if (exemploMatch) {
-        const codeStartIndex = processedContent.indexOf(exemploMatch[0])
-        const textBefore = processedContent.substring(0, codeStartIndex).trim()
-        let code = exemploMatch[1].trim()
+  // 2. Padrão Exemplo:
+  const exampleIndex = processed.toLowerCase().indexOf("exemplo:");
+  if (exampleIndex !== -1) {
+    const text = processed.slice(0, exampleIndex).trim();
+    const code = normalizeIndentation(processed.slice(exampleIndex + 8).trim());
+    return { text, code };
+  }
 
-        code = normalizeIndentation(code)
+  // 3. Detecção automática de código (NOVA PARTE 🔥)
+  if (isCodeLike(processed)) {
+    const lines = processed.split("\n");
 
-        return { text: textBefore, code }
+    // tenta separar texto de código
+    const codeStart = lines.findIndex(
+      (line) =>
+        line.includes("{") ||
+        line.includes("const ") ||
+        line.includes("function ") ||
+        line.includes("=>"),
+    );
+
+    if (codeStart !== -1) {
+      const text = lines.slice(0, codeStart).join("\n").trim();
+      const code = normalizeIndentation(lines.slice(codeStart).join("\n"));
+
+      return { text, code };
     }
 
-    const codeBlockRegex = /```[\s\S]*?```/g
-    const codeBlockMatches = processedContent.match(codeBlockRegex)
+    // se não achar separação clara, tudo vira código
+    return { text: "", code: normalizeIndentation(processed) };
+  }
 
-    if (codeBlockMatches) {
-        const firstCodeBlock = codeBlockMatches[0]
-        const codeStartIndex = processedContent.indexOf(firstCodeBlock)
-
-        const textBefore = processedContent.substring(0, codeStartIndex).trim()
-
-        let code = firstCodeBlock
-            .replace(/```[\w]*\n?/g, '')
-            .replace(/```$/g, '')
-
-        code = normalizeIndentation(code)
-
-        return { text: textBefore, code }
-    }
-
-    return { text: processedContent }
+  return { text: processed };
 }
+
